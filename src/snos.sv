@@ -36,8 +36,8 @@ module snos
    input i2c_mcu_data,
    input i2c_mcu_bck,
 
-   // Reset MCU
-   output reset_mcu, /* (?) */
+   // DAC reset from MCU
+   input mcu_dac_reset, 
 
    // Input clock
    input clk,
@@ -56,5 +56,6 @@ module snos
    output pll_clk
    );
 
+   
 endmodule // snos
 
