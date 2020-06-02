@@ -35,7 +35,7 @@
 #
 # -------------------------------------------------------------------------- #
 
-
+set_global_assignment -name NUM_PARALLEL_PROCESSORS 2
 set_global_assignment -name FAMILY "MAX II"
 set_global_assignment -name DEVICE EPM570T100C5
 set_global_assignment -name TOP_LEVEL_ENTITY snos
