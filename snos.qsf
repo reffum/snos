@@ -54,3 +54,4 @@ set_global_assignment -name SYSTEMVERILOG_FILE src/nos_dac_transceiver/nos_dac_f
 set_global_assignment -name SYSTEMVERILOG_FILE src/i2s_deser.sv
 set_global_assignment -name SYSTEMVERILOG_FILE src/common.sv
 set_global_assignment -name SYSTEMVERILOG_FILE src/snos.sv
+set_global_assignment -name SDC_FILE src/constrains.sdc
