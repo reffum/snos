@@ -32,9 +32,9 @@ module snos
    input 	mclk_in,
 
    // MCU serail data input
-   input 	i2c_mcu_lrck,
-   input 	i2c_mcu_data,
-   input 	i2c_mcu_bck,
+   input 	i2s_mcu_lrck,
+   input 	i2s_mcu_data,
+   input 	i2s_mcu_bck,
 
    // DAC reset from MCU
    input 	mcu_dac_reset, 
@@ -60,7 +60,6 @@ module snos
    // Nets
    //
 
-   logic 	clk;
    logic 	resetn;
 
    // Input I2S nets
@@ -105,7 +104,8 @@ module snos
 
    // Bitnum assigment from mcu_bit_* signals
    always_comb begin
-      logic [2:0] b = {mcu_bit_6, mcu_bit_8, mcu_bit_10};
+      logic [2:0] b;
+      b = {mcu_bit_6, mcu_bit_8, mcu_bit_10};
 
       if(b === 3'b100)
 	bitnum = b16;
@@ -117,7 +117,8 @@ module snos
 
    // NOS bitnum select
    always_comb begin
-      logic [1:0] s = j[12:11];
+      logic [1:0] s;
+      s  = j[12:11];
 
       if(s === 2'b11)
 	nos_bitnum = NOS16;
@@ -131,7 +132,8 @@ module snos
 
    // Master clock frequency select
    always_comb begin
-      logic [2:0] s = j[9:7];
+      logic [2:0] s;
+      s = j[9:7];
 
       if(s === 3'b000)
 	mclk_sel = MCLK_256fs;

@@ -3,6 +3,9 @@
 //
 
 package common;
+   // Number of bits in I2S word
+   localparam I2S_BITS = 32;
+   
    // Standart stream parameters(reference, bitrate(x1,x2..), bitnumber
    typedef enum   logic {REF_x48, REF_x44} Reference;
    typedef enum   logic [1:0]  { x1, x2, x4, x8 } BITRATE;
