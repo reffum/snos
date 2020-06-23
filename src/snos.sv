@@ -331,7 +331,24 @@ module snos
 	 p_d <= mcu_dsd_on;
       end // else: !if(j[15])
    end // always_comb
-   
+
+   //
+   // DAC control
+   //
+   always_comb begin
+      if(j[1])
+	dac_44_48 <= ~mcu_44_48;
+      else
+	dac_44_48 <= mcu_44_48;
+
+      if(j[2])
+	dac_mute <= ~mcu_mute;
+      else
+	dac_mute <= mcu_mute;
+
+      if(j[4:3] == 2'b00) begin
+	 case bitrate
+	   x1: dac_f <= 2'b00
 	 
 	 
 endmodule // snos
