@@ -69,7 +69,7 @@ module snos
    logic 	nos_bck, nos_data_r, nos_data_l, nos_le;
 
    // nos_dac_transceiver control signals
-   logic 	nos_bck_cont, nos_start;
+   logic 	nos_bck_cont;
    NOS_BITNUM nos_bitnum;
    logic 	nos_full;
    
@@ -91,6 +91,8 @@ module snos
    // Master clock frequency
    MCLK mclk_sel;
 
+   // Master clock
+   logic 	mclk;
    
 
    //
@@ -102,6 +104,9 @@ module snos
    assign i2s.data = i2s_mcu_data;
    assign i2s.lrck = i2s_mcu_lrck;
 
+   assign mclk = pll_clkout;
+   
+   
    // Bitnum assigment from mcu_bit_* signals
    always_comb begin
       logic [2:0] b;
@@ -115,6 +120,36 @@ module snos
 	bitnum = b32;
    end
 
+   // Bitrate assiment from mcu_f
+   always_comb begin
+      
+      if(mcu_f == 2'b00)
+	bitrate = x1;
+      else if(mcu_f == 2'b01)
+	bitrate = x2;
+      else if(mcu_f == 2'b10)
+	bitrate = x4;
+      else
+	bitrate = x8;
+   end // always_comb
+
+   // NOS BCK CONT/STOP
+   always_comb begin
+      if(j[14] === 1'b1)
+	nos_bck_cont = 1'b1;
+      else
+	nos_bck_cont = 1'b0;
+   end
+
+   // NOS FULL/HALF
+   always_comb begin
+      if(j[13])
+	nos_full = 1'b1;
+      else
+	nos_full = 1'b0;
+   end
+   
+   
    // NOS bitnum select
    always_comb begin
       logic [1:0] s;
@@ -147,6 +182,8 @@ module snos
 	mclk_sel = MCLK_1024fs;
    end // always_comb
 
+   
+   
    //
    // Modules
    //
@@ -155,7 +192,7 @@ module snos
    // NOS DAC output
    nos_dac_transceiver nos_dac_transceiver_inst
      (
-      .clk(clk),
+      .clk(mclk),
       .resetn(resetn),
       .data(i2s_data),
       .start(i2s_valid),

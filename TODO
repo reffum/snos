@@ -1,0 +1,7 @@
+Receive I2C from MCU and output it in NOS DAC form.
+- Indication, including alterative 
+- DSD / NOS
+- PLL
+- LEDs
+- DAC control
+- Data output
