@@ -1,6 +1,4 @@
 Receive I2C from MCU and output it in NOS DAC form.
-- LEDs
-
 - Indication, including alterative 
 
 - DAC control

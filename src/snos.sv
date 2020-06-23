@@ -44,7 +44,7 @@ module snos
    input 	clk,
   
    // Control signals from MCU
-   input 	mcu_44_48, mcu_mute,
+   input 	mcu_44_48, /* 44 - 0, 48 - 1*/ mcu_mute,
    input [1:0] 	mcu_f,
    input 	mcu_dsd_on, /* 0 - DSD, 1 - PCM */
    input 	mcu_bit_6, mcu_bit_8, mcu_bit_10,
@@ -305,6 +305,34 @@ module snos
       .in(mclk_in),
       .out(led[1])
       );
+
+   //
+   // Indication
+   //
+   always_comb begin
+      // Normal indication
+      if(j[15]) begin
+	 p_d <= mcu_p_d;
+	 bit_6 <= mcu_bit_6;
+	 bit_8 <= mcu_bit_8;
+	 bit_10 <= mcu_bit_10;
+	 d_5 <= mcu_d5;
+	 d_7 <= mcu_d7;
+	 d_9 <= mcu_d9;
+
+	 // Alternative indication
+      end else begin
+	 bit_6 <= ~mcu_44_48;
+	 bit_8 <= mcu_44_48;
+	 bit_10 <= (bitrate == x2);
+	 d_5 <= ~mcu_dsd_on;
+	 d_7 <= (bitrate == x1);
+	 d_9 <= (bitrate == x4);
+	 p_d <= mcu_dsd_on;
+      end // else: !if(j[15])
+   end // always_comb
    
+	 
+	 
 endmodule // snos
 
