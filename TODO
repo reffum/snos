@@ -5,4 +5,4 @@ Receive I2C from MCU and output it in NOS DAC form.
 
 - DAC control
 - Divider
-
+- Signal detector

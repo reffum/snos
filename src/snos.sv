@@ -232,7 +232,7 @@ module snos
    end // always_comb
 
    //
-   // PLL controls
+   // PLL controls.
    //
    logic pll_clk_div3, pll_clk_div2, mclk_in_div2;
    
@@ -287,7 +287,24 @@ module snos
       .out(mclk_in_div2)
       );
    
-   
+   //
+   // LEDs indication
+   //
+   signal_indicator data_indicator
+     (
+      .clk(clk),
+      .resetn(resetn),
+      .in(i2s_mcu_bck),
+      .out(led[2])
+      );
+
+   signal_indicator mclk_indicator
+     (
+      .clk(clk),
+      .resetn(resetn),
+      .in(mclk_in),
+      .out(led[1])
+      );
    
 endmodule // snos
 
