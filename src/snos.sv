@@ -1,6 +1,7 @@
 //
 // SNOS(Simple NOS) project. Top level module
 //
+import common::*;
 
 module snos
   (
@@ -45,14 +46,14 @@ module snos
    // Control signals from MCU
    input 	mcu_44_48, mcu_mute,
    input [1:0] 	mcu_f,
-   input 	mcu_dsd_on,
+   input 	mcu_dsd_on, /* 0 - DSD, 1 - PCM */
    input 	mcu_bit_6, mcu_bit_8, mcu_bit_10,
    input 	mcu_d5, mcu_d7, mcu_d9,
    input 	mcu_p_d,
 
    // External PLL signals
    input 	pll_clkout,
-   output [1:0] pll_s,
+   inout [1:0] 	pll_s,
    output 	pll_clk
    );
 
@@ -94,7 +95,6 @@ module snos
    // Master clock
    logic 	mclk;
    
-
    //
    // Nets logic
    //
@@ -103,9 +103,6 @@ module snos
    assign i2s.bck = i2s_mcu_bck;
    assign i2s.data = i2s_mcu_data;
    assign i2s.lrck = i2s_mcu_lrck;
-
-   assign mclk = pll_clkout;
-   
    
    // Bitnum assigment from mcu_bit_* signals
    always_comb begin
@@ -215,6 +212,79 @@ module snos
       .i2s(i2s),
       .out(i2s_data),
       .valid(i2s_valid)
+      );
+   
+   //
+   // Data outptut
+   //
+   always_comb begin
+      if( !mcu_dsd_on ) begin
+	 i2s_dac_lrck <= i2s_mcu_lrck;
+	 i2s_dac_bck <= i2s_mcu_bck;
+	 i2s_dac_data <= i2s_mcu_data;
+	 i2s_dac_data_r <= 1'b0;
+      end else begin
+	 i2s_dac_lrck <= nos_le;
+	 i2s_dac_bck <= nos_bck;
+	 i2s_dac_data <= nos_data_l;
+	 i2s_dac_data_r <= nos_data_r;
+      end // else: !if( !mcu_dsd_on )
+   end // always_comb
+
+   //
+   // PLL controls
+   //
+   logic pll_clk_div3, pll_clk_div2, mclk_in_div2;
+   
+   assign pll_clk = mclk_in;
+   
+   always_comb begin
+      pll_s <= 2'b00;
+      
+      if(mclk_sel == MCLK_256fs) begin
+	 pll_s <= 2'b00; // 2X
+	 mclk <= pll_clk;
+      end else if(mclk_sel == MCLK_384fs) begin
+	 pll_s <= 2'b10; // 4X
+	 mclk <= pll_clk_div3;
+      end else if (mclk_sel == MCLK_512fs) begin
+	 mclk <= mclk_in;
+      end else if(mclk_sel == MCLK_768fs) begin
+	 pll_s <= 2'bz0; // 3X
+	 mclk <= pll_clk_div2;
+      end else if(mclk_sel == MCLK_1024fs) begin
+	 mclk <= mclk_in_div2;
+      end
+   end // always_comb
+
+   divider 
+     #( 
+	.COEF(3)
+	) 
+   pll_clk_3_divider
+     (
+      .in(pll_clk),
+      .out(pll_clk_div3)
+      );
+
+   divider
+     #(
+       .COEF(2)
+       )
+   pll_clk_2_divider
+     (
+      .in(pll_clk),
+      .out(pll_clk_div2),
+      );
+   
+   divider
+     #(
+       .COEF(2)
+       )
+   mclk_in_2_divider
+     (
+      .in(mclk_in),
+      .out(mclk_in_div2)
       );
    
    
