@@ -48,6 +48,8 @@ set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR "-1"
 set_global_assignment -name POWER_EXT_SUPPLY_VOLTAGE_TO_REGULATOR 3.3V
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "NO HEAT SINK WITH STILL AIR"
+set_global_assignment -name SYSTEMVERILOG_FILE src/signal_indicator.sv
+set_global_assignment -name SYSTEMVERILOG_FILE src/divider.sv
 set_global_assignment -name SYSTEMVERILOG_FILE src/nos_dac_transceiver/nos_dac_transceiver.sv
 set_global_assignment -name SYSTEMVERILOG_FILE src/nos_dac_transceiver/nos_dac_half.sv
 set_global_assignment -name SYSTEMVERILOG_FILE src/nos_dac_transceiver/nos_dac_full.sv

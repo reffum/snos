@@ -61,7 +61,7 @@ module snos
    // Nets
    //
 
-   logic 	resetn;
+   logic 	resetn = 1'b1;
 
    // Input I2S nets
    I2S i2s;
@@ -218,7 +218,7 @@ module snos
    // Data outptut
    //
    always_comb begin
-      if( !mcu_dsd_on ) begin
+      if( !mcu_dsd_on || !j[10]) begin
 	 i2s_dac_lrck <= i2s_mcu_lrck;
 	 i2s_dac_bck <= i2s_mcu_bck;
 	 i2s_dac_data <= i2s_mcu_data;
@@ -240,10 +240,11 @@ module snos
    
    always_comb begin
       pll_s <= 2'b00;
+      mclk <= 1'b0;
       
       if(mclk_sel == MCLK_256fs) begin
 	 pll_s <= 2'b00; // 2X
-	 mclk <= pll_clk;
+	 mclk <= pll_clkout;
       end else if(mclk_sel == MCLK_384fs) begin
 	 pll_s <= 2'b10; // 4X
 	 mclk <= pll_clk_div3;
@@ -263,7 +264,7 @@ module snos
 	) 
    pll_clk_3_divider
      (
-      .in(pll_clk),
+      .in(pll_clkout),
       .out(pll_clk_div3)
       );
 
@@ -273,8 +274,8 @@ module snos
        )
    pll_clk_2_divider
      (
-      .in(pll_clk),
-      .out(pll_clk_div2),
+      .in(pll_clkout),
+      .out(pll_clk_div2)
       );
    
    divider
@@ -336,6 +337,8 @@ module snos
    // DAC control
    //
    always_comb begin
+      dac_f <= 2'b00;
+      
       if(j[1])
 	dac_44_48 <= ~mcu_44_48;
       else
@@ -347,9 +350,47 @@ module snos
 	dac_mute <= mcu_mute;
 
       if(j[4:3] == 2'b00) begin
-	 case bitrate
-	   x1: dac_f <= 2'b00
-	 
+	 case (bitrate)
+	   x1: dac_f <= 2'b00;
+	   x2: dac_f <= 2'b01;
+	   x4: dac_f <= 2'b10;
+	   x8: dac_f <= 2'b10;
+	 endcase // case bitrate
+      end else if (j[4:3] == 2'b10) begin
+	 case (bitrate)
+	   x1: dac_f <= 2'b11;
+	   x2: dac_f <= 2'b00;
+	   x4: dac_f <= 2'b00;
+	   x8: dac_f <= 2'b00;
+	 endcase // case bitrate
+      end else if( j[4:3] == 2'b01) begin
+	 case (bitrate)
+	   x1: dac_f <= 2'b01;
+	   x2: dac_f <= 2'b11;
+	   x4: dac_f <= 2'b00;
+	   x8: dac_f <= 2'b00;
+	 endcase // case bitrate
+      end else if(j[4:3] == 2'b11) begin
+	 case (bitrate)
+	   x1: dac_f <= 2'b00;
+	   x2: dac_f <= 2'b01;
+	   x4: dac_f <= 2'b10;
+	   x8: dac_f <= 2'b11;
+	 endcase // case bitrate
+      end
+      
+      if(j[5])
+	dac_dsd <= ~mcu_dsd_on;
+      else
+	dac_dsd <= mcu_dsd_on;
+
+      if(j[6])
+	dac_reset <= ~mcu_dac_reset;
+      else
+	dac_reset <= mcu_dac_reset;
+   end // always_comb
+
+   
 	 
 endmodule // snos
 
