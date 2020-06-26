@@ -28,6 +28,7 @@
 
 db/
 /output_files/*
+!/output_files/*.pof
 .qsys_edit/
 .settings/
 work/
