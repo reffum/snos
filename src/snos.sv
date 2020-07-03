@@ -54,7 +54,9 @@ module snos
    // External PLL signals
    input 	pll_clkout,
    inout [1:0] 	pll_s,
-   output 	pll_clk
+   output 	pll_clk,
+
+   output 	reset_mcu
    );
 
    //
@@ -390,7 +392,7 @@ module snos
 	dac_reset <= mcu_dac_reset;
    end // always_comb
 
-   
+   assign reset_mcu = 1'b1;
 	 
 endmodule // snos
 
