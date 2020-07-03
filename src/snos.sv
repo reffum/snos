@@ -11,7 +11,7 @@ module snos
    // Indication signals
    output 	p_d,
    output 	bit_6, bit_8, bit_10,
-   output 	d_5, d_7, d_9,
+   output 	d_5, d_7, d_9, p_x8,
 
    // Leds
    output [2:1] led,
@@ -223,16 +223,16 @@ module snos
    // Data outptut
    //
    always_comb begin
-      if( !mcu_dsd_on || !j[10]) begin
-	 i2s_dac_lrck <= i2s_mcu_lrck;
-	 i2s_dac_bck <= i2s_mcu_bck;
-	 i2s_dac_data <= i2s_mcu_data;
-	 i2s_dac_data_r <= 1'b0;
+      if( !mcu_dsd_on || j[10]) begin
+		 i2s_dac_lrck <= i2s_mcu_lrck;
+		 i2s_dac_bck <= i2s_mcu_bck;
+		 i2s_dac_data <= i2s_mcu_data;
+		 i2s_dac_data_r <= 1'b0;
       end else begin
-	 i2s_dac_lrck <= nos_le;
-	 i2s_dac_bck <= nos_bck;
-	 i2s_dac_data <= nos_data_l;
-	 i2s_dac_data_r <= nos_data_r;
+		 i2s_dac_lrck <= nos_le;
+		 i2s_dac_bck <= nos_bck;
+		 i2s_dac_data <= nos_data_l;
+		 i2s_dac_data_r <= nos_data_r;
       end // else: !if( !mcu_dsd_on )
    end // always_comb
 
@@ -325,16 +325,18 @@ module snos
 	 d_5 <= mcu_d5;
 	 d_7 <= mcu_d7;
 	 d_9 <= mcu_d9;
+	 p_x8 <= 1'b0;
 
 	 // Alternative indication
       end else begin
-	 bit_6 <= ~mcu_44_48;
-	 bit_8 <= mcu_44_48;
-	 bit_10 <= (bitrate == x2);
-	 d_5 <= ~mcu_dsd_on;
-	 d_7 <= (bitrate == x1);
-	 d_9 <= (bitrate == x4);
-	 p_d <= mcu_dsd_on;
+	 bit_6 <= mcu_44_48;
+	 bit_8 <= ~mcu_44_48;
+	 bit_10 <= !(bitrate == x2);
+	 d_5 <= mcu_dsd_on;
+	 d_7 <= !(bitrate == x1);
+	 d_9 <= !(bitrate == x4);
+	 p_d <= ~mcu_dsd_on;
+	 p_x8 <= !(bitrate == x8);
       end // else: !if(j[15])
    end // always_comb
 
@@ -345,14 +347,14 @@ module snos
       dac_f <= 2'b00;
       
       if(j[1])
-	dac_44_48 <= ~mcu_44_48;
+			dac_44_48 <= mcu_44_48;
       else
-	dac_44_48 <= mcu_44_48;
+			dac_44_48 <= ~mcu_44_48;
 
       if(j[2])
-	dac_mute <= ~mcu_mute;
+			dac_mute <= mcu_mute;
       else
-	dac_mute <= mcu_mute;
+			dac_mute <= ~mcu_mute;
 
       if(j[4:3] == 2'b00) begin
 	 case (bitrate)
@@ -385,14 +387,14 @@ module snos
       end
       
       if(j[5])
-	dac_dsd <= ~mcu_dsd_on;
+			dac_dsd <= mcu_dsd_on;
       else
-	dac_dsd <= mcu_dsd_on;
+			dac_dsd <= ~mcu_dsd_on;
 
       if(j[6])
-	dac_reset <= ~mcu_dac_reset;
+			dac_reset <= mcu_dac_reset;
       else
-	dac_reset <= mcu_dac_reset;
+			dac_reset <= ~mcu_dac_reset;
    end // always_comb
 
    assign reset_mcu = 1'b1;
