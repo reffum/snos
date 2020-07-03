@@ -32,6 +32,9 @@ module snos
    // MCLK input
    input 	mclk_in,
 
+   // MCLK output to MCU
+   output 	mclk_out,
+   
    // MCU serail data input
    input 	i2s_mcu_lrck,
    input 	i2s_mcu_data,
@@ -393,6 +396,7 @@ module snos
    end // always_comb
 
    assign reset_mcu = 1'b1;
-	 
+   assign mclk_out = mclk;
+   
 endmodule // snos
 

@@ -115,3 +115,4 @@ set_location_assignment PIN_87 -to pll_s[1]
 set_location_assignment PIN_89 -to pll_s[0]
 set_location_assignment PIN_92 -to pll_clk
 set_location_assignment PIN_78 -to reset_mcu
+set_location_assignment PIN_57 -to mclk_out
