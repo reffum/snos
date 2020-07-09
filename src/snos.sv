@@ -74,6 +74,11 @@ module snos
    // NOS DAC nets
    logic 	nos_bck, nos_data_r, nos_data_l, nos_le;
 
+   // RJ16, RJ24, LJ nets
+   logic 	rj24_bck, rj24_lrck, rj24_d;
+   logic 	rj16_bck, rj16_lrck, rj16_d;
+   logic 	lj_bck, lj_lrck, lj_d;
+   
    // nos_dac_transceiver control signals
    logic 	nos_bck_cont;
    NOS_BITNUM nos_bitnum;
@@ -189,6 +194,42 @@ module snos
    //
    // Modules
    //
+
+   // RJ16
+   rj_transceiver #(.BITS(16)) rj_transceiver_16
+     (
+      .clk(i2s.bck),
+      .data(i2s_data),
+      .start(i2s_valid),
+
+      .bck(rj16_bck),
+      .lrck(rj16_lrck),
+      .d(rj16_d)
+      );
+   
+   // RJ24
+   rj_transceiver #(.BITS(24)) rj_transceiver_24
+     (
+      .clk(i2s.bck),
+      .data(i2s_data),
+      .start(i2s_valid),
+
+      .bck(rj24_bck),
+      .lrck(rj24_lrck),
+      .d(rj24_d)
+      );
+
+   // LJ
+   rj_transceiver #(.BITS(32)) lj_transceiver
+     (
+      .clk(i2s.bck),
+      .data(i2s_data),
+      .start(i2s_valid),
+
+      .bck(lj_bck),
+      .lrck(lj_lrck),
+      .d(lj_d)
+      );
    
    // NOS DAC module. Convert data from parallel form to
    // NOS DAC output
@@ -223,17 +264,56 @@ module snos
    // Data outptut
    //
    always_comb begin
-      if( !mcu_dsd_on || j[10]) begin
-		 i2s_dac_lrck <= i2s_mcu_lrck;
-		 i2s_dac_bck <= i2s_mcu_bck;
-		 i2s_dac_data <= i2s_mcu_data;
-		 i2s_dac_data_r <= 1'b0;
+      // Default: I2S
+      i2s_dac_lrck <= i2s_mcu_lrck;
+      i2s_dac_bck <= i2s_mcu_bck;
+      i2s_dac_data <= i2s_mcu_data;
+      i2s_dac_data_r <= 1'b0;
+      
+      // DSD mode
+      if( !mcu_dsd_on) begin
+	 i2s_dac_lrck <= i2s_mcu_lrck;
+	 i2s_dac_bck <= i2s_mcu_bck;
+	 i2s_dac_data <= i2s_mcu_data;
+	 i2s_dac_data_r <= 1'b0;
+      end else if( !j[10] ) begin // NOS DAC 
+	 i2s_dac_lrck <= nos_le;
+	 i2s_dac_bck <= nos_bck;
+	 i2s_dac_data <= nos_data_l;
+	 i2s_dac_data_r <= nos_data_r;
       end else begin
-		 i2s_dac_lrck <= nos_le;
-		 i2s_dac_bck <= nos_bck;
-		 i2s_dac_data <= nos_data_l;
-		 i2s_dac_data_r <= nos_data_r;
-      end // else: !if( !mcu_dsd_on )
+	 i2s_dac_data_r <= 1'b0;
+	 
+	 case(j[12:11])
+	   // LJ
+	   2'b00: begin
+	      i2s_dac_lrck <= lj_lrck;
+	      i2s_dac_bck <= lj_bck;
+	      i2s_dac_data <= lj_d;
+	   end
+
+	   // RJ24
+	   2'b01:begin
+	      i2s_dac_lrck <= rj24_lrck;
+	      i2s_dac_bck <= rj24_bck;
+	      i2s_dac_data <= rj24_d;
+	   end
+
+	   // RJ16
+	   2'b10: begin
+	      i2s_dac_lrck <= rj16_lrck;
+	      i2s_dac_bck <= rj16_bck;
+	      i2s_dac_data <= rj16_d;
+	   end
+
+	   // I2S normal
+	   2'b11: begin
+	      i2s_dac_lrck <= i2s_mcu_lrck;
+	      i2s_dac_bck <= i2s_mcu_bck;
+	      i2s_dac_data <= i2s_mcu_data;
+	   end
+	 endcase // case (j[12:11])
+      end
    end // always_comb
 
    //

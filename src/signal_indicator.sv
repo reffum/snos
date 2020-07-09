@@ -13,7 +13,7 @@ module signal_indicator
    parameter C_MAX = 10_000;
    
    logic  in_d1, in_d2;
-   integer cnt_cs, cnt_ns;
+   logic [7:0] cnt_cs, cnt_ns;
 
    always_ff @(posedge clk) begin
       in_d1 <= in;

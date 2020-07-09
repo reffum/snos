@@ -11,8 +11,8 @@ module divider
 
    parameter COEF;
 
-   integer cnt_ns, cnt_cs;
-   logic   out_cs, out_ns;
+   logic [3:0] cnt_ns, cnt_cs;
+   logic       out_cs, out_ns;
    
    always_ff @(in, resetn) begin
      if(!resetn) begin
