@@ -8,6 +8,10 @@ proc compilecode {} {
     vlog -novopt ${SRC}/i2s_deser.sv
     vlog -novopt ${SRC}/signal_indicator.sv
     vlog -novopt ${SRC}/snos.sv
+    vlog -novopt ${SRC}/rj_transceiver.sv
+    vlog -novopt ${SRC}/nos_dac_transceiver/nos_dac_full.sv
+    vlog -novopt ${SRC}/nos_dac_transceiver/nos_dac_half.sv
+    vlog -novopt ${SRC}/nos_dac_transceiver/nos_dac_transceiver.sv
     
     vlog -novopt pack.sv
     vlog -novopt i2s_transmitter.sv

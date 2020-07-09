@@ -24,8 +24,8 @@ module tb;
 
    // Indication signals
    logic 	p_d;
-   logic 	bit_6; bit_8; bit_10;
-   logic 	d_5; d_7; d_9;
+   logic 	bit_6, bit_8, bit_10;
+   logic 	d_5, d_7, d_9, p_x8;
 
    // Leds
    logic [2:1] 	led;
@@ -46,6 +46,9 @@ module tb;
    // MCLK logic
    logic 	mclk_in;
 
+   // MCLK output logic to MCU
+   logic 	mclk_out;
+
    // MCU serail data logic
    logic 	i2s_mcu_lrck;
    logic 	i2s_mcu_data;
@@ -58,18 +61,20 @@ module tb;
    logic 	clk;
    
    // Control signals from MCU
-   logic 	mcu_44_48; /* 44 - 0; 48 - 1*/ mcu_mute;
+   logic 	mcu_44_48, /* 44 - 0; 48 - 1*/ mcu_mute;
    logic [1:0] 	mcu_f;
    logic 	mcu_dsd_on; /* 0 - DSD; 1 - PCM */
-   logic 	mcu_bit_6; mcu_bit_8; mcu_bit_10;
-   logic 	mcu_d5; mcu_d7; mcu_d9;
+   logic 	mcu_bit_6, mcu_bit_8, mcu_bit_10;
+   logic 	mcu_d5, mcu_d7, mcu_d9;
    logic 	mcu_p_d;
 
    // External PLL signals
    logic 	pll_clkout;
-   inout [1:0] 	pll_s;
+   wire [1:0] 	pll_s;
    logic 	pll_clk;
-
+   
+   logic 	reset_mcu;
+   
 
    // UUT instantance
    snos UUT

@@ -6,60 +6,60 @@ import common::*;
 module snos
   (
    // Configuration inputs
-   input [15:1] j,
+   input [15:1]       j,
 
    // Indication signals
-   output 	p_d,
-   output 	bit_6, bit_8, bit_10,
-   output 	d_5, d_7, d_9, p_x8,
+   output logic       p_d,
+   output logic       bit_6, bit_8, bit_10,
+   output logic       d_5, d_7, d_9, p_x8,
 
    // Leds
-   output [2:1] led,
+   output logic [2:1] led,
 
    // DAC control signals
-   output 	dac_44_48, /* 0 - 44, 1 - 48 */
-   output 	dac_mute,
-   output [1:0] dac_f, /* DAC sample rate */
-   output 	dac_dsd, /* 0 - DSD, 1 - PCM */
-   output 	dac_reset,
+   output logic       dac_44_48, /* 0 - 44, 1 - 48 */
+   output logic       dac_mute,
+   output logic [1:0] dac_f, /* DAC sample rate */
+   output logic       dac_dsd, /* 0 - DSD, 1 - PCM */
+   output logic       dac_reset,
 
    // DAC serial data channel
-   output 	i2s_dac_lrck,
-   output 	i2s_dac_data,
-   output 	i2s_dac_bck,
-   output 	i2s_dac_data_r,
+   output logic       i2s_dac_lrck,
+   output logic       i2s_dac_data,
+   output logic       i2s_dac_bck,
+   output logic       i2s_dac_data_r,
 
    // MCLK input
-   input 	mclk_in,
+   input 	      mclk_in,
 
-   // MCLK output to MCU
-   output 	mclk_out,
+   // MCLK output logic to MCU
+   output logic       mclk_out,
    
    // MCU serail data input
-   input 	i2s_mcu_lrck,
-   input 	i2s_mcu_data,
-   input 	i2s_mcu_bck,
+   input 	      i2s_mcu_lrck,
+   input 	      i2s_mcu_data,
+   input 	      i2s_mcu_bck,
 
    // DAC reset from MCU
-   input 	mcu_dac_reset, 
+   input 	      mcu_dac_reset, 
 
    // Input clock
-   input 	clk,
+   input 	      clk,
   
    // Control signals from MCU
-   input 	mcu_44_48, /* 44 - 0, 48 - 1*/ mcu_mute,
-   input [1:0] 	mcu_f,
-   input 	mcu_dsd_on, /* 0 - DSD, 1 - PCM */
-   input 	mcu_bit_6, mcu_bit_8, mcu_bit_10,
-   input 	mcu_d5, mcu_d7, mcu_d9,
-   input 	mcu_p_d,
+   input 	      mcu_44_48, /* 44 - 0, 48 - 1*/ mcu_mute,
+   input [1:0] 	      mcu_f,
+   input 	      mcu_dsd_on, /* 0 - DSD, 1 - PCM */
+   input 	      mcu_bit_6, mcu_bit_8, mcu_bit_10,
+   input 	      mcu_d5, mcu_d7, mcu_d9,
+   input 	      mcu_p_d,
 
    // External PLL signals
-   input 	pll_clkout,
-   inout [1:0] 	pll_s,
-   output 	pll_clk,
+   input 	      pll_clkout,
+   inout [1:0] 	      pll_s,
+   output 	      pll_clk,
 
-   output 	reset_mcu
+   output logic       reset_mcu
    );
 
    //
@@ -104,11 +104,22 @@ module snos
 
    // Master clock
    logic 	mclk;
+
+   // pll_s inout logic
+   logic [1:0] 	pll_s_i, pll_s_o, pll_s_t;
    
    //
    // Nets logic
    //
 
+   // pll_s logic
+   assign pll_s_i = pll_s;
+
+   genvar 	i;
+   for(i = 0; i < $size(pll_s); i++)
+     assign pll_s[i] = (pll_s_t[i] == 1'b1) ?  pll_s_o : 1'bz;
+   
+   
    // Input I2S interface
    assign i2s.bck = i2s_mcu_bck;
    assign i2s.data = i2s_mcu_data;
@@ -324,19 +335,24 @@ module snos
    assign pll_clk = mclk_in;
    
    always_comb begin
-      pll_s <= 2'b00;
+      pll_s_o <= 2'b00;
+      pll_s_t <= 2'b11;
+      
       mclk <= 1'b0;
       
       if(mclk_sel == MCLK_256fs) begin
-	 pll_s <= 2'b00; // 2X
+	 pll_s_o <= 2'b00;
+	 pll_s_t <= 2'b11;
 	 mclk <= pll_clkout;
       end else if(mclk_sel == MCLK_384fs) begin
-	 pll_s <= 2'b10; // 4X
+	 pll_s_o <= 2'b10; // 4X
+	 pll_s_t <= 2'b11;
 	 mclk <= pll_clk_div3;
       end else if (mclk_sel == MCLK_512fs) begin
 	 mclk <= mclk_in;
       end else if(mclk_sel == MCLK_768fs) begin
-	 pll_s <= 2'bz0; // 3X
+	 pll_s_o <= 2'b00;// 3X
+	 pll_s_t <= 2'b01;
 	 mclk <= pll_clk_div2;
       end else if(mclk_sel == MCLK_1024fs) begin
 	 mclk <= mclk_in_div2;
