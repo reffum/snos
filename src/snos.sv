@@ -112,13 +112,15 @@ module snos
    // Nets logic
    //
 
+   genvar 	i;
+   generate
+      for(i = 0; i < $size(pll_s); i++) begin : PLL_S
+	 assign pll_s[i] = (pll_s_t[i] == 1'b1) ?  pll_s_o[i] : 1'bz;
+      end
+   endgenerate
+
    // pll_s logic
    assign pll_s_i = pll_s;
-
-   genvar 	i;
-   for(i = 0; i < $size(pll_s); i++)
-     assign pll_s[i] = (pll_s_t[i] == 1'b1) ?  pll_s_o : 1'bz;
-   
    
    // Input I2S interface
    assign i2s.bck = i2s_mcu_bck;

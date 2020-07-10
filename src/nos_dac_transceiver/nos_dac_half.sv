@@ -28,7 +28,7 @@ module nos_dac_half
    logic [23:0] 	  reg_r_cs, reg_r_ns;
    logic [23:0] 	  reg_l_cs, reg_l_ns;
    byte 		  data_bits_num_cs, data_bits_num_ns;
-   int unsigned 	  bit_counter_cs, bit_counter_ns;
+   byte 		  bit_counter_cs, bit_counter_ns;
 
    always_ff @(posedge clk, negedge resetn) begin : STATE_REG
       if(!resetn)
