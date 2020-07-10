@@ -246,7 +246,7 @@ module snos
    // NOS DAC output
    nos_dac_transceiver nos_dac_transceiver_inst
      (
-      .clk(mclk),
+      .clk(i2s.bck),
       .resetn(resetn),
       .data(i2s_data),
       .start(i2s_valid),
