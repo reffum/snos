@@ -25,7 +25,10 @@ proc setupsim {} {
 
     run -all
 
-    add wave /UUT/mclk_in add wave /UUT/pll_clk
+    add wave /UUT/mclk_in /UUT/pll_clk /UUT/mclk_out
+    add wave /UUT/i2s_mcu_lrck /UUT/i2s_mcu_data /UUT/i2s_mcu_bck
+    add wave /UUT/i2s_dac_lrck /UUT/i2s_dac_data /UUT/i2s_dac_bck /UUT/i2s_dac_data_r
+    wave zoom full
 }
 
 alias "c" compilecode

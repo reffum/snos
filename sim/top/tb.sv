@@ -4,6 +4,8 @@
 timeunit 1ns;
 timeprecision 100ps;
 
+import common::*;
+
 module tb;
 
    //
@@ -11,6 +13,7 @@ module tb;
    //
    localparam time CLK_PERIOD = 41.6ns; // 24 MHz
    localparam time MCLK_PERIOD = 40.6ns;
+   
    
 
    
@@ -89,6 +92,21 @@ module tb;
       .bck(i2s_mcu_bck)
       );
 
+   //
+   // Jumpers
+   //
+   assign j[1] = 1'b1;
+   assign j[2] = 1'b1;
+   assign j[4:3] = 2'b11;
+   assign j[5] = 1'b1;
+   assign j[6] = 1'b0;
+   assign j[9:7] = 3'b111;
+   assign j[10] = 1'b1;
+   assign j[12:11] = 2'b11;
+   assign j[13] = 1'b0;
+   assign j[14] = 1'b0;
+   assign j[15] = 1'b1;
+   
    initial begin : CLK_GENERATION
       clk = 1'b0;
       forever #(CLK_PERIOD) clk = ~clk;
@@ -100,8 +118,27 @@ module tb;
    end
 
    initial begin : TEST
+      localparam TEST_DATA_SIZE = 1024;
+      localparam BITRATE = 44_100;
+      localparam CHAN_NUM = 2;
       
-      #1ms;
+
+      static logic [I2S_BITS-1:0] TestData[TEST_DATA_SIZE][CHAN_NUM];
+      
+      
+      // Set I2S transmitter parameters
+      i2s_transmitter_inst.SetBits(I2S_BITS);
+      i2s_transmitter_inst.SetBitRate(BITRATE);
+
+      assert(randomize(TestData) == 1);
+
+      i2s_transmitter_inst.SetBits(I2S_BITS);
+      i2s_transmitter_inst.SetBitRate(BITRATE);
+
+      // Send data
+      i2s_transmitter_inst.Send(TestData);      
+      
+      #10us;
       $finish;
       
    end

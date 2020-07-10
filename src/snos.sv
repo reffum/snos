@@ -365,6 +365,7 @@ module snos
 	) 
    pll_clk_3_divider
      (
+      .resetn(resetn),
       .in(pll_clkout),
       .out(pll_clk_div3)
       );
@@ -375,6 +376,7 @@ module snos
        )
    pll_clk_2_divider
      (
+      .resetn(resetn),
       .in(pll_clkout),
       .out(pll_clk_div2)
       );
@@ -385,6 +387,7 @@ module snos
        )
    mclk_in_2_divider
      (
+      .resetn(resetn),
       .in(mclk_in),
       .out(mclk_in_div2)
       );
