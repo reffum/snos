@@ -12,7 +12,7 @@ module tb;
    // Parameters
    //
    localparam time CLK_PERIOD = 41.6ns; // 24 MHz
-   localparam time MCLK_PERIOD = 40.6ns;
+   localparam realtime MCLK_PERIOD = 40.6ns;
    
    
 
@@ -92,6 +92,14 @@ module tb;
       .bck(i2s_mcu_bck)
       );
 
+   nos_dac_receiver nos_dac_receiver_inst
+     (
+      .bck(i2s_dac_bck),
+      .le(i2s_dac_lrck),
+      .data_l(i2s_dac_data),
+      .data_r(i2s_dac_data_r)
+      );   
+
    //
    // Jumpers
    //
@@ -100,9 +108,9 @@ module tb;
    assign j[4:3] = 2'b11;
    assign j[5] = 1'b1;
    assign j[6] = 1'b0;
-   assign j[9:7] = 3'b111;
-   assign j[10] = 1'b0;
-   assign j[12:11] = 2'b00;
+   assign j[9:7] = 3'b100;
+   assign j[10] = 1'b0; // NOS DAC
+   assign j[12:11] = 2'b00; // 24 bits
    assign j[13] = 1'b0;
    assign j[14] = 1'b0;
    assign j[15] = 1'b1;
@@ -111,6 +119,35 @@ module tb;
       clk = 1'b0;
       forever #(CLK_PERIOD) clk = ~clk;
    end
+
+   // Simulate NB3N502
+   initial begin : PLL_CLK_GEN
+      automatic time clk_period = MCLK_PERIOD;
+      automatic real coef = 0;
+      
+      pll_clkout = 1'b0;
+
+      fork
+	 forever begin 
+	    @(pll_s);
+	    case(pll_s)
+	      2'b00: coef = 2.0;
+	      2'b01: coef = 5.0;
+	      2'bz0: coef = 3.0;
+	      2'bz1: coef = 3.33;
+	      2'b10: coef = 4.0;
+	      2'b11: coef = 2.5;
+	      default:
+		$stop;
+	    endcase // case (pll_s)
+	    clk_period = MCLK_PERIOD / coef;
+	    
+	 end // forever begin
+
+
+	 forever #(clk_period) pll_clkout = ~pll_clkout;
+      join
+   end // block: PLL_CLK_GEN
 
    initial begin : MCLK_GENERATION
       mclk_in = 1'b0;
@@ -121,28 +158,57 @@ module tb;
       localparam TEST_DATA_SIZE = 1024;
       localparam BITRATE = 44_100;
       localparam CHAN_NUM = 2;
+      localparam NOS_BITS = 24;
+
+      // static logic [I2S_BITS-1:0] TestData[TEST_DATA_SIZE][CHAN_NUM];
       
+      // // Set I2S transmitter parameters
+      // i2s_transmitter_inst.SetBits(I2S_BITS);
+      // i2s_transmitter_inst.SetBitRate(BITRATE);
 
-      static logic [I2S_BITS-1:0] TestData[TEST_DATA_SIZE][CHAN_NUM];
+      // assert(randomize(TestData) == 1);
+
+      
+      // i2s_transmitter_inst.SetBits(I2S_BITS);
+      // i2s_transmitter_inst.SetBitRate(BITRATE);
+
+      // // Send data
+      // nos_dac_receiver_inst.Clear();
+      // i2s_transmitter_inst.Send(TestData);   
+
+      // #10us;
+
+      // // Check data
+      // assert(TEST_DATA_SIZE == nos_dac_receiver_inst.Data_r.size()) else begin
+      // 	 $display("ASSERT FAIL. Size missmached");
+      // 	 $display("TEST size = %d, Data size = %d", TEST_DATA_SIZE, nos_dac_receiver_inst.Data_r.size());
+      // 	 $stop;
+      // end
       
       
-      // Set I2S transmitter parameters
-      i2s_transmitter_inst.SetBits(I2S_BITS);
-      i2s_transmitter_inst.SetBitRate(BITRATE);
+      // for(int i = 0; i < TEST_DATA_SIZE; i++) begin
+      // 	 assert(nos_dac_receiver_inst.Data_r[i][NOS_BITS-1:0] == TestData[i][0][I2S_BITS-1:I2S_BITS-NOS_BITS]) else begin
+      // 	    $display("ASSERT fail");
+      // 	    $display("TestData[%0d] = %H", i, TestData[i][0][I2S_BITS-1:I2S_BITS-NOS_BITS]);
+      // 	    $display("Data_r[%0d] = %H", i, nos_dac_receiver_inst.Data_r[i][NOS_BITS-1:0]);
+      // 	    $stop;
+      // 	 end
 
-      assert(randomize(TestData) == 1);
 
-      i2s_transmitter_inst.SetBits(I2S_BITS);
-      i2s_transmitter_inst.SetBitRate(BITRATE);
+      // 	 assert(nos_dac_receiver_inst.Data_l[i][NOS_BITS-1:0] == TestData[i][1][I2S_BITS-1:I2S_BITS-NOS_BITS]) else begin
+      // 	    $display("ASSERT fail");
+      // 	    $display("TestData[%0d] = %H", i, TestData[i][1][I2S_BITS-1:I2S_BITS-NOS_BITS]);
+      // 	    $display("Data_r[%0d] = %H", i, nos_dac_receiver_inst.Data_l[i][NOS_BITS-1:0]);
+      // 	    $stop;
+      // 	 end
+      // end
 
-      // Send data
-      i2s_transmitter_inst.Send(TestData);      
       
       #10us;
       $finish;
       
    end
-   
+
    
    
 endmodule // tb
