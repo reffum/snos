@@ -108,7 +108,7 @@ module tb;
    assign j[4:3] = 2'b11;
    assign j[5] = 1'b1;
    assign j[6] = 1'b0;
-   assign j[9:7] = 3'b100;
+   assign j[9:7] = 3'b111;
    assign j[10] = 1'b0; // NOS DAC
    assign j[12:11] = 2'b00; // 24 bits
    assign j[13] = 1'b0;
@@ -160,55 +160,50 @@ module tb;
       localparam CHAN_NUM = 2;
       localparam NOS_BITS = 24;
 
-      // static logic [I2S_BITS-1:0] TestData[TEST_DATA_SIZE][CHAN_NUM];
+      static logic [I2S_BITS-1:0] TestData[TEST_DATA_SIZE][CHAN_NUM];
       
-      // // Set I2S transmitter parameters
-      // i2s_transmitter_inst.SetBits(I2S_BITS);
-      // i2s_transmitter_inst.SetBitRate(BITRATE);
+      // Set I2S transmitter parameters
+      i2s_transmitter_inst.SetBits(I2S_BITS);
+      i2s_transmitter_inst.SetBitRate(BITRATE);
 
-      // assert(randomize(TestData) == 1);
-
-      
-      // i2s_transmitter_inst.SetBits(I2S_BITS);
-      // i2s_transmitter_inst.SetBitRate(BITRATE);
-
-      // // Send data
-      // nos_dac_receiver_inst.Clear();
-      // i2s_transmitter_inst.Send(TestData);   
-
-      // #10us;
-
-      // // Check data
-      // assert(TEST_DATA_SIZE == nos_dac_receiver_inst.Data_r.size()) else begin
-      // 	 $display("ASSERT FAIL. Size missmached");
-      // 	 $display("TEST size = %d, Data size = %d", TEST_DATA_SIZE, nos_dac_receiver_inst.Data_r.size());
-      // 	 $stop;
-      // end
-      
-      
-      // for(int i = 0; i < TEST_DATA_SIZE; i++) begin
-      // 	 assert(nos_dac_receiver_inst.Data_r[i][NOS_BITS-1:0] == TestData[i][0][I2S_BITS-1:I2S_BITS-NOS_BITS]) else begin
-      // 	    $display("ASSERT fail");
-      // 	    $display("TestData[%0d] = %H", i, TestData[i][0][I2S_BITS-1:I2S_BITS-NOS_BITS]);
-      // 	    $display("Data_r[%0d] = %H", i, nos_dac_receiver_inst.Data_r[i][NOS_BITS-1:0]);
-      // 	    $stop;
-      // 	 end
-
-
-      // 	 assert(nos_dac_receiver_inst.Data_l[i][NOS_BITS-1:0] == TestData[i][1][I2S_BITS-1:I2S_BITS-NOS_BITS]) else begin
-      // 	    $display("ASSERT fail");
-      // 	    $display("TestData[%0d] = %H", i, TestData[i][1][I2S_BITS-1:I2S_BITS-NOS_BITS]);
-      // 	    $display("Data_r[%0d] = %H", i, nos_dac_receiver_inst.Data_l[i][NOS_BITS-1:0]);
-      // 	    $stop;
-      // 	 end
-      // end
+      assert(randomize(TestData) == 1);
 
       
+      i2s_transmitter_inst.SetBits(I2S_BITS);
+      i2s_transmitter_inst.SetBitRate(BITRATE);
+
+      // Send data
+      nos_dac_receiver_inst.Clear();
+      i2s_transmitter_inst.Send(TestData);   
+
       #10us;
-      $finish;
-      
-   end
 
-   
+      // Check data
+      assert(TEST_DATA_SIZE == nos_dac_receiver_inst.Data_r.size()) else begin
+      	 $display("ASSERT FAIL. Size missmached");
+      	 $display("TEST size = %d, Data size = %d", TEST_DATA_SIZE, nos_dac_receiver_inst.Data_r.size());
+      	 $stop;
+      end
+      
+      
+      for(int i = 0; i < TEST_DATA_SIZE; i++) begin
+      	 assert(nos_dac_receiver_inst.Data_r[i][NOS_BITS-1:0] == TestData[i][0][I2S_BITS-1:I2S_BITS-NOS_BITS]) else begin
+      	    $display("ASSERT fail");
+      	    $display("TestData[%0d] = %H", i, TestData[i][0][I2S_BITS-1:I2S_BITS-NOS_BITS]);
+      	    $display("Data_r[%0d] = %H", i, nos_dac_receiver_inst.Data_r[i][NOS_BITS-1:0]);
+      	    $stop;
+      	 end
+
+
+      	 assert(nos_dac_receiver_inst.Data_l[i][NOS_BITS-1:0] == TestData[i][1][I2S_BITS-1:I2S_BITS-NOS_BITS]) else begin
+      	    $display("ASSERT fail");
+      	    $display("TestData[%0d] = %H", i, TestData[i][1][I2S_BITS-1:I2S_BITS-NOS_BITS]);
+      	    $display("Data_r[%0d] = %H", i, nos_dac_receiver_inst.Data_l[i][NOS_BITS-1:0]);
+      	    $stop;
+      	 end
+      end
+
+      $finish;
+   end
    
 endmodule // tb
