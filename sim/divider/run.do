@@ -1,5 +1,6 @@
 proc compilecode {} {
-    vlog -novopt ../../src/divider.sv
+    vlog -novopt ../../src/clk_div3.sv
+    vlog -novopt ../../src/clk_div2.sv
     vlog -novopt tb.sv
 }
 

@@ -34,7 +34,7 @@ module snos
 
    // MCLK output logic to MCU
    output logic       mclk_out,
-   
+  
    // MCU serail data input
    input 	      i2s_mcu_lrck,
    input 	      i2s_mcu_data,
@@ -66,29 +66,29 @@ module snos
    // Nets
    //
 
-   logic 	resetn = 1'b1;
+   logic 	      resetn = 1'b1;
 
    // Input I2S nets
    I2S i2s;
    
    // NOS DAC nets
-   logic 	nos_bck, nos_data_r, nos_data_l, nos_le;
+   logic 	      nos_bck, nos_data_r, nos_data_l, nos_le;
 
    // RJ16, RJ24, LJ nets
-   logic 	rj24_bck, rj24_lrck, rj24_d;
-   logic 	rj16_bck, rj16_lrck, rj16_d;
-   logic 	lj_bck, lj_lrck, lj_d;
+   logic 	      rj24_bck, rj24_lrck, rj24_d;
+   logic 	      rj16_bck, rj16_lrck, rj16_d;
+   logic 	      lj_bck, lj_lrck, lj_d;
    
    // nos_dac_transceiver control signals
-   logic 	nos_bck_cont;
+   logic 	      nos_bck_cont;
    NOS_BITNUM nos_bitnum;
-   logic 	nos_full;
+   logic 	      nos_full;
    
    // Parallel data
    // High word - left channel,
    // Low word - right channel
-   logic [63:0] i2s_data;
-   logic 	i2s_valid;
+   logic [63:0]       i2s_data;
+   logic 	      i2s_valid;
 
    // Input I2S data bitnum
    BITNUM bitnum;
@@ -103,16 +103,16 @@ module snos
    MCLK mclk_sel;
 
    // Master clock
-   logic 	mclk;
+   logic 	      mclk;
 
    // pll_s inout logic
-   logic [1:0] 	pll_s_i, pll_s_o, pll_s_t;
+   logic [1:0] 	      pll_s_i, pll_s_o, pll_s_t;
    
    //
    // Nets logic
    //
 
-   genvar 	i;
+   genvar 	      i;
    generate
       for(i = 0; i < $size(pll_s); i++) begin : PLL_S
 	 assign pll_s[i] = (pll_s_t[i] == 1'b1) ?  pll_s_o[i] : 1'bz;
@@ -353,41 +353,29 @@ module snos
       end else if (mclk_sel == MCLK_512fs) begin
 	 mclk <= mclk_in;
       end else if(mclk_sel == MCLK_768fs) begin
-	 pll_s_o <= 2'b00;// 3X
-	 pll_s_t <= 2'b01;
-	 mclk <= pll_clk_div2;
+	 pll_s_o <= 2'b00;// 2X
+	 pll_s_t <= 2'b11;
+	 mclk <= pll_clk_div3;
       end else if(mclk_sel == MCLK_1024fs) begin
 	 mclk <= mclk_in_div2;
       end
    end // always_comb
 
-   divider 
-     #( 
-	.COEF(3)
-	) 
-   pll_clk_3_divider
+   clk_div3 pll_clk_3_divider
      (
       .resetn(resetn),
       .in(pll_clkout),
       .out(pll_clk_div3)
       );
 
-   divider
-     #(
-       .COEF(2)
-       )
-   pll_clk_2_divider
+   clk_div2 pll_clk_2_divider
      (
       .resetn(resetn),
       .in(pll_clkout),
       .out(pll_clk_div2)
       );
    
-   divider
-     #(
-       .COEF(2)
-       )
-   mclk_in_2_divider
+   clk_div2 mclk_in_2_divider
      (
       .resetn(resetn),
       .in(mclk_in),
@@ -448,14 +436,14 @@ module snos
       dac_f <= 2'b00;
       
       if(j[1])
-			dac_44_48 <= mcu_44_48;
+	dac_44_48 <= mcu_44_48;
       else
-			dac_44_48 <= ~mcu_44_48;
+	dac_44_48 <= ~mcu_44_48;
 
       if(j[2])
-			dac_mute <= mcu_mute;
+	dac_mute <= mcu_mute;
       else
-			dac_mute <= ~mcu_mute;
+	dac_mute <= ~mcu_mute;
 
       if(j[4:3] == 2'b00) begin
 	 case (bitrate)
@@ -488,14 +476,14 @@ module snos
       end
       
       if(j[5])
-			dac_dsd <= mcu_dsd_on;
+	dac_dsd <= mcu_dsd_on;
       else
-			dac_dsd <= ~mcu_dsd_on;
+	dac_dsd <= ~mcu_dsd_on;
 
       if(j[6])
-			dac_reset <= mcu_dac_reset;
+	dac_reset <= mcu_dac_reset;
       else
-			dac_reset <= ~mcu_dac_reset;
+	dac_reset <= ~mcu_dac_reset;
    end // always_comb
 
    assign reset_mcu = 1'b1;

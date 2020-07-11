@@ -107,9 +107,11 @@ set_location_assignment PIN_92 -to pll_clk
 set_location_assignment PIN_61 -to reset_mcu
 set_location_assignment PIN_57 -to mclk_out
 set_location_assignment PIN_16 -to p_x8
+set_global_assignment -name AUTO_PACKED_REGISTERS_MAX "MINIMIZE AREA"
+set_global_assignment -name SYSTEMVERILOG_FILE src/clk_div2.sv
+set_global_assignment -name SYSTEMVERILOG_FILE src/clk_div3.sv
 set_global_assignment -name SYSTEMVERILOG_FILE src/rj_transceiver.sv
 set_global_assignment -name SYSTEMVERILOG_FILE src/signal_indicator.sv
-set_global_assignment -name SYSTEMVERILOG_FILE src/divider.sv
 set_global_assignment -name SYSTEMVERILOG_FILE src/nos_dac_transceiver/nos_dac_transceiver.sv
 set_global_assignment -name SYSTEMVERILOG_FILE src/nos_dac_transceiver/nos_dac_half.sv
 set_global_assignment -name SYSTEMVERILOG_FILE src/nos_dac_transceiver/nos_dac_full.sv
@@ -118,4 +120,3 @@ set_global_assignment -name SYSTEMVERILOG_FILE src/common.sv
 set_global_assignment -name SYSTEMVERILOG_FILE src/snos.sv
 set_global_assignment -name SDC_FILE src/constrains.sdc
 set_global_assignment -name SIGNALTAP_FILE stp3.stp
-set_global_assignment -name AUTO_PACKED_REGISTERS_MAX "MINIMIZE AREA"

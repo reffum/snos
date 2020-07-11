@@ -131,10 +131,10 @@ module nos_dac_half
 	end 
 
 	S2:
-	  bit_counter_ns <= bit_counter_cs - 1;
+	  bit_counter_ns <= bit_counter_cs - 8'd1;
 
 	S4: begin
-	   bit_counter_ns <= bit_counter_cs - 1;
+	   bit_counter_ns <= bit_counter_cs - 8'd1;
 	   reg_r_ns <= reg_r_cs << 1;
 	   reg_l_ns <= reg_l_cs << 1;
 	end

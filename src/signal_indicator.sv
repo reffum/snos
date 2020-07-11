@@ -10,10 +10,10 @@ module signal_indicator
    output out
    );
 
-   parameter C_MAX = 10_000;
+   parameter shortint unsigned C_MAX = 10_000;
    
    logic  in_d1, in_d2;
-   logic [7:0] cnt_cs, cnt_ns;
+   shortint unsigned cnt_cs, cnt_ns;
 
    always_ff @(posedge clk) begin
       in_d1 <= in;
@@ -30,7 +30,7 @@ module signal_indicator
       if(in_d1 != in_d2)
 	cnt_ns <= C_MAX;
       else if(cnt_cs > 0)
-	cnt_ns = cnt_cs - 1;
+	cnt_ns = cnt_cs - 16'd1;
       else
 	cnt_ns = cnt_cs;
    end

@@ -4,7 +4,8 @@ proc compilecode {} {
     global SRC
 
     vlog -novopt ${SRC}/common.sv
-    vlog -novopt ${SRC}/divider.sv
+    vlog -novopt ${SRC}/clk_div2.sv
+    vlog -novopt ${SRC}/clk_div3.sv
     vlog -novopt ${SRC}/i2s_deser.sv
     vlog -novopt ${SRC}/signal_indicator.sv
     vlog -novopt ${SRC}/snos.sv
@@ -26,12 +27,12 @@ proc setupsim {} {
 
     run -all
 
-    # add wave /UUT/mclk_in /UUT/mclk_out /UUT/pll_clkout /UUT/pll_s /UUT/pll_clk
-    # add wave /UUT/pll_clk_div3 /UUT/pll_clk_div2 
-    add wave /UUT/i2s_mcu_lrck /UUT/i2s_mcu_data /UUT/i2s_mcu_bck
-    add wave /UUT/i2s_dac_lrck /UUT/i2s_dac_data /UUT/i2s_dac_data_r /UUT/i2s_dac_bck
+    add wave /UUT/mclk_in /UUT/mclk_out /UUT/pll_clkout /UUT/pll_s /UUT/pll_clk
+    add wave /UUT/pll_clk_div3 /UUT/pll_clk_div2 
+    # add wave /UUT/i2s_mcu_lrck /UUT/i2s_mcu_data /UUT/i2s_mcu_bck
+    # add wave /UUT/i2s_dac_lrck /UUT/i2s_dac_data /UUT/i2s_dac_data_r /UUT/i2s_dac_bck
 
-    add wave /UUT/i2s_data /UUT/i2s_valid
+    # add wave /UUT/i2s_data /UUT/i2s_valid
     wave zoom full
 }
 

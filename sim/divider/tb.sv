@@ -20,16 +20,29 @@ module tb;
       #100us $finish;
    end
 
-   divider #(.COEF(2)) UUT0
+   // divider #(.COEF(2)) UUT0
+   //   (
+   //    .resetn,
+   //    .in(in),
+   //    .out(out2)
+   //    );
+   
+   // divider #(.COEF(3)) UUT1
+   //   (
+   //    .resetn,
+   //    .in(in),
+   //    .out(out3)
+   //    );
+   clk_div2 clk_div2_inst
      (
-      .resetn,
+      .resetn(resetn),
       .in(in),
       .out(out2)
       );
    
-   divider #(.COEF(3)) UUT1
+   clk_div3 clk_div3_inst
      (
-      .resetn,
+      .resetn(resetn),
       .in(in),
       .out(out3)
       );
